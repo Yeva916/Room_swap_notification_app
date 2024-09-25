@@ -1,19 +1,23 @@
-const mongoose = require("mongoose");
-// const mongoURL='mongodb://127.0.0.1:27017/myapp';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+// import method is used insteas of require method to import the modules
+dotenv.config();
 
-mongoose.connect("mongodb://localhost:27017/Room_matching");
+const mongoURL = process.env.MONGO_URL // Ensure you set MONGO_URL in your .env file
+mongoose.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true });
+
 const db = mongoose.connection;
 
-db.on("connected", () => {
-  console.log("Connected to mongodb server");
+db.on('connected', () => {
+    console.log('Connected to MongoDB server');
 });
 
-db.on("error", (err) => {
-  console.log("Error in connection to mongodb server", err);
+db.on('error', (err) => {
+    console.log('Error in connection to MongoDB server', err);
 });
 
-db.on("disconnected", () => {
-  console.log("Disconnected from mongodb server");
+db.on('disconnected', () => {
+    console.log('Disconnected from MongoDB server');
 });
 
-module.exports = db;
+export default db;
