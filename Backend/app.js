@@ -1,6 +1,11 @@
 const express = require('express');
 const db = require('./db');
+const login = require('./routes/login');
+const bodyParser = require('body-parser');
 const app = express();
+
+app.use(bodyParser.json())
+app.use("/",login);
 
 
 app.listen(3000, () => {
