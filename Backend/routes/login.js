@@ -2,15 +2,61 @@ const router = require('express').Router();
 const db = require('../db');
 
 const rooms = db.collection('rooms');
-router.get('/login',async(req,res)=>{
+router.post('/login',async(req,res)=>{
+    const User=[]
     const USN = req.body.USN.toUpperCase();
     const user = await rooms.findOne({USN:USN}); 
-    res.send(user)
+    // const prevRoommate = await rooms.find({
+    //     "Present\rRoom No": {
+    //         "": user["Present\rRoom No"][""]
+    //     },
+    //     "USN": {
+    //         $ne: user.USN
+    //     }
+    // }).toArray();
+    // const newRoommate = await rooms.find({
+    //     "New Room\rNo": {
+    //         " Alloted": user["New Room\rNo"][" Alloted"]
+    //     },
+    //     "USN": {
+    //         $ne: user.USN
+    //     }
+    // }).toArray();
+    // console.log("prevRoommate",prevRoommate)
+    // console.log("newRoommate",newRoommate)
+
+    const roommates = await rooms.find({
+        $or:[
+            {
+                "Present\rRoom No": {
+                    "": user["Present\rRoom No"][""]
+                },
+                // "USN": {
+                //     $ne: user.USN
+                // }
+            },
+            {
+                "New Room\rNo": {
+                    " Alloted": user["New Room\rNo"][" Alloted"]
+                },
+                "USN": {
+                    $ne: user.USN
+                }
+            }
+
+        ]
+    }).toArray();
+    // console.log(user["PresentRoom No"][""])
+    console.log(roommates)
+    
+    res.send(roommates)
+    // console.log(user["Present\rRoom No"][""])
+    // console.log(user["New Room\rNo"][" Alloted"])
 })
 
 module.exports = router;
 
-
+// need to add try and catch block for error handling
 // here i am sending the data to the frontend in the format fo json object:
 // ex:
 // {
