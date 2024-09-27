@@ -1,1 +1,0 @@
-print('those who are not interested please specify')

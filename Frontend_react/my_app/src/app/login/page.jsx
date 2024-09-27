@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+const port= process.env.NEXT_PUBLIC_PORT
+console.log(port)
 
 const LoginPage = () => {
     const [USN, setUSN] = useState('');
@@ -13,7 +15,7 @@ const LoginPage = () => {
         e.preventDefault();
         setLoading(true); // Set loading to true
         try {
-            const response = await axios.post('http://localhost:5001/login', { "USN": USN });
+            const response = await axios.post(`http://localhost:${port}/login`, { "USN": USN });
 
             if (response.status === 200) {
                 router.push(`/home/?USN=${encodeURIComponent(USN)}`);

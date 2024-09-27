@@ -3,7 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-
+const port= process.env.NEXT_PUBLIC_PORT
 const HomePage = () => {
   const [user, setUser] = useState(null);
   const [prev, setPrev] = useState([]);
@@ -14,13 +14,13 @@ const HomePage = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.post('http://localhost:5001/getdata', { USN });
+      const response = await axios.post(`http://localhost:${port}/getdata`, { USN });
       setUser(response.data);
 
-      const response1 = await axios.post('http://localhost:5001/getprevious', { USN });
+      const response1 = await axios.post(`http://localhost:${port}/getprevious`, { USN });
       setPrev(response1.data);
 
-      const response2 = await axios.post('http://localhost:5001/getnew', { USN });
+      const response2 = await axios.post(`http://localhost:${port}/getnew`, { USN });
       setNew1(response2.data);
     } catch (error) {
       console.error("Error fetching data:", error);

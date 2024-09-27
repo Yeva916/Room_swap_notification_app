@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const db = require('../db');
 
+
 router.post('/willing', async (req, res) => {
     try {
         const rooms = db.getCollection('rooms'); // Get the collection here
