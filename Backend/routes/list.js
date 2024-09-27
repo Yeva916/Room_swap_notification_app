@@ -2,15 +2,45 @@ const router = require('express').Router();
 const db = require('../db');
 
 const rooms = db.collection('rooms');
-
-router.post('/getList',async(req,res)=>{
+router.get('/getList',async(req,res)=>{
     // const response = req.body;
     const User=[]
     const users = await rooms.find().toArray()
     users.forEach((name)=>{
-        User.push(name["Names"])
+        User.push(name)
     })
     res.send(User)
+})
+
+router.get('/distinct',async(req,res)=>{
+//     const distinct = await rooms.distinct({
+//         "New Room\rNo": " Alloted"
+
+// })
+const user = await rooms.find().toArray()
+const distinct = await rooms.distinct("New Room\rNo. Alloted")
+const collection = []
+
+distinct.forEach((room)=>{
+   
+    const roommates=[]
+    user.forEach((name)=>{
+        if(name["New Room\rNo"][" Alloted"]==room){
+            roommates.push(name)
+        }
+    })
+    collection.push(roommates)
+})
+// user.forEach((name)=>{
+
+// })
+console.log(counter)
+res.send(collection)
+})
+
+router.get('/test',async(req,res)=>{
+    const distinct = await rooms.distinct("New Room\rNo. Alloted")
+    res.send(distinct)
 })
 
 module.exports = router;
