@@ -1,101 +1,95 @@
-
 'use client'; // Mark as client-side
 
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+
 const HomePage = () => {
-  // Retrieve the email from the query string
-  const [user,setUser]=useState('')
-  const [prev,setPrev]=useState([])
-  const [new1,setNew1]=useState([])
-  // const [username,setUsername]=useState('')
-  // const [prevname,setPrevname]=useState([])
-  // const [newname,setNewname]=useState([])
-  const [searchParams] = useSearchParams();
+  const [user, setUser] = useState(null);
+  const [prev, setPrev] = useState([]);
+  const [new1, setNew1] = useState([]);
+  const searchParams = useSearchParams();
 
-  const USN = searchParams[1]
-  const fetchData = async()=>{
-    const response = await axios.post('http://localhost:5000/getdata',{"USN":USN})
-    setUser(response.data)
-    const response1 = await axios.post('http://localhost:5000/getprevious',{"USN":USN})
-    setPrev(response1.data)
-    const response2 = await axios.post('http://localhost:5000/getnew',{"USN":USN})
-    setNew1(response2.data)
-  }
+  const USN = searchParams.get('USN'); // Ensure the correct method to get the USN
 
-  // fetchData()
-// const nameCollection = ()=>{
-//   console.log("hi")
-//   console.log(user.Names)
-//   setUsername(user.Names)
-//   // console.log(name1)
-//   // setUsername(user["Names"])
-//   prev.forEach((name)=>{
-//     setPrevname(name["Names"])  
-//   })
-//   // prev.forEach((name)=>{
-//   //   setPrevname(name["Names"])  
-//   // })
-//   new1.forEach((name)=>{
-//     setNewname(name["Names"])  
-//   })
-// }
+  const fetchData = async () => {
+    try {
+      const response = await axios.post('http://localhost:5001/getdata', { USN });
+      setUser(response.data);
 
+      const response1 = await axios.post('http://localhost:5001/getprevious', { USN });
+      setPrev(response1.data);
 
-// nameCollection()
+      const response2 = await axios.post('http://localhost:5001/getnew', { USN });
+      setNew1(response2.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
-
-
-useEffect(()=>{
-  // pk()
-fetchData();
-// nameCollection()
-},[])
-
-
-const pk= ()=>{
-  console.log("hi")
-}
-// console.log("user:",user)
-// console.log("prev:",prevname)
-// console.log("new1:",newname)
-
+  useEffect(() => {
+    if (USN) {
+      fetchData();
+    }
+  }, [USN]); // Fetch data whenever USN changes
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-100 p-6">
       <header>
-        <div className=' bg-black flex justify-between p-2  rounded-full'>
-          <div className=' text-white'>logo</div>
-          <div className=' text-white'>Notification</div>
-          
+        <div className="bg-gradient-to-r from-blue-500 to-purple-500 flex justify-between p-4 rounded-lg shadow-lg">
+          <div className="text-white text-lg font-bold">User Profile</div>
+          <div className="text-white">Notification</div>
         </div>
       </header>
-      <section className=' grid grid-cols-3 bg-pink-700 h-full py-4 mt-4'>
-        <div className=' flex items-center justify-center'>
-          <div className=' flex flex-col items-center justify-center'>
-            <div className=' h-20 w-20 rounded-full bg-red-600'></div>
-            {/* {prev.forEach((name)=>{
-              console.log(name["Names"])
-              return(<div className=' text-black'>{name["Names"]}</div>)
-            })} */}
-                    {prev.map((name, index) => (
-          <div key={index} className='text-black'>
-            {name["Names"]}
-          </div>
-        ))}
 
+      {/* Current User Section */}
+      <section className="bg-white shadow-md rounded-lg p-6 my-4 flex flex-col items-center">
+        <div className="h-24 w-24 rounded-full bg-blue-600 mx-auto mb-4 flex items-center justify-center shadow-lg">
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            className="h-20 w-20 text-white" 
+            fill="currentColor" 
+            viewBox="0 0 24 24">
+            <path d="M12 12c2.7 0 4.75-2.04 4.75-4.75S14.7 2.5 12 2.5 7.25 4.54 7.25 7.25 9.3 12 12 12zm0 2.5c-4.24 0-7.75 2.24-7.75 5v1h15.5v-1c0-2.76-3.51-5-7.75-5z"/>
+          </svg>
+        </div>
+        <div className="text-black text-2xl font-semibold">{user ? user["Names"] : 'Loading...'}</div>
+        <div className="text-gray-600 text-lg">{user ? user["USN"] : ''}</div>
+      </section>
+
+      {/* Previous and New Roommates Section */}
+      <section className="flex justify-between my-6">
+        {/* Previous Roommates Section */}
+        <div className="flex flex-col items-center w-1/2 pr-2">
+          <h2 className="text-xl font-bold mb-4">Previous Roommates</h2>
+          <div className="bg-gray-50 shadow-md rounded-lg p-4 w-full flex flex-col items-center">
+            {prev.length > 0 ? (
+              prev.map((roommate, index) => (
+                <div key={index} className="border-b py-3 w-full text-center hover:bg-gray-100 transition duration-200">
+                  <div className="text-black font-medium">{roommate["Names"]}</div>
+                  <div className="text-gray-600">{roommate["USN"]}</div>
+                </div>
+              ))
+            ) : (
+              <div className="text-gray-500">No previous roommates found.</div>
+            )}
           </div>
         </div>
-        <div className=' flex text-black items-center justify-center'> {user["Names"]}</div>
-        <div className='flex items-center justify-center'>
-        <div className=' flex flex-col items-center justify-center'>
-            <div className=' h-20 w-20 rounded-full bg-red-600'></div>
-            {new1.map((name, index) => (
-          <div key={index} className='text-black'>
-            {name["Names"]}
-          </div>
-        ))}
+
+        {/* New Roommates Section */}
+        <div className="flex flex-col items-center w-1/2 pl-2">
+          <h2 className="text-xl font-bold mb-4">New Roommates</h2>
+          <div className="bg-gray-50 shadow-md rounded-lg p-4 w-full flex flex-col items-center">
+            {new1.length > 0 ? (
+              new1.map((roommate, index) => (
+                <div key={index} className="border-b py-3 w-full text-center hover:bg-gray-100 transition duration-200">
+                  <div className="text-black font-medium">{roommate["Names"]}</div>
+                  <div className="text-gray-600">{roommate["USN"]}</div>
+                </div>
+              ))
+            ) : (
+              <div className="text-gray-500">No new roommates found.</div>
+            )}
           </div>
         </div>
       </section>
