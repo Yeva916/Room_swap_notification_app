@@ -1,19 +1,33 @@
-const mongoose = require("mongoose");
-// const mongoURL='mongodb://127.0.0.1:27017/myapp';
+const { MongoClient } = require('mongodb');
+const dotenv = require('dotenv');
 
-mongoose.connect("mongodb://localhost:27017/Room_matching");
-const db = mongoose.connection;
+dotenv.config();
 
-db.on("connected", () => {
-  console.log("Connected to mongodb server");
-});
+const uri = process.env.MONGOD_URI; 
+const client = new MongoClient(uri);
 
-db.on("error", (err) => {
-  console.log("Error in connection to mongodb server", err);
-});
+let db;
 
-db.on("disconnected", () => {
-  console.log("Disconnected from mongodb server");
-});
+async function connectDB() {
+    try {
+        await client.connect();
+        console.log("Connected to MongoDB!");
+        db = client.db('Room_matching'); // Replace with your database name
+    } catch (error) {
+        console.error('Error connecting to MongoDB:', error);
+    }
+}
+// Function to get the collection
+function getCollection(name) {
+  if (!db) {
+      throw new Error('Database not initialized. Call connectDB first.');
+  }
+  return db.collection(name);
+}
 
-module.exports = db;
+// Export the connection and collection function
+module.exports = {
+  connectDB,
+  getCollection,
+  client: () => client
+};

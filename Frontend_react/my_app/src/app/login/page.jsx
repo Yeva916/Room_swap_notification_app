@@ -13,7 +13,7 @@ const LoginPage = () => {
         e.preventDefault();
         setLoading(true); // Set loading to true
         try {
-            const response = await axios.post('http://localhost:5000/login', { "USN": USN });
+            const response = await axios.post('http://localhost:5001/login', { "USN": USN });
 
             if (response.status === 200) {
                 router.push(`/home/?USN=${encodeURIComponent(USN)}`);
@@ -24,7 +24,7 @@ const LoginPage = () => {
             setLoading(false); // Reset loading state
         }
     };
-
+ 
     return (
         <div className="max-w-md mx-auto mt-12 p-8 border border-gray-300 rounded-lg shadow-lg bg-white flex flex-col items-center transition-shadow duration-300 hover:shadow-xl">
             <h2 className="text-center mb-5 text-lg font-bold text-gray-800">Login</h2>
