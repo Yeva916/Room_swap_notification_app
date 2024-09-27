@@ -2,6 +2,7 @@ const express = require('express');
 const db = require('./db'); // Database module
 const login = require('./routes/login');
 const home = require('./routes/home');
+const list = require('./routes/list');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 require('dotenv').config();
@@ -21,6 +22,7 @@ db.connectDB()
         // Use routes only after successful connection
         app.use("/", login);
         app.use("/", home);
+        app.use("/",list)
 
         // Start the server
         app.listen(PORT, () => {
