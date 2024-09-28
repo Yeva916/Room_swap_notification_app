@@ -3,7 +3,10 @@
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import io from 'socket.io-client';
 const port= process.env.NEXT_PUBLIC_PORT
+const socket = io(`http://localhost:${port}`); // Connect to the server
+
 const HomePage = () => {
   const [user, setUser] = useState(null);
   const [prev, setPrev] = useState([]);
@@ -29,6 +32,7 @@ const HomePage = () => {
 
   useEffect(() => {
     if (USN) {
+      socket.emit('user_loggin',USN)
       fetchData();
     }
   }, [USN]); // Fetch data whenever USN changes
