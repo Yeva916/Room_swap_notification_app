@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const db = require('../db');
 
-
+var USN = ''
 router.post('/willing', async (req, res) => {
     try {
         const rooms = db.getCollection('rooms'); // Get the collection here
@@ -63,6 +63,7 @@ router.post('/getprevious', async (req, res) => {
     }
 });
 
+
 router.post('/getnew', async (req, res) => {
     try {
         const rooms = db.getCollection('rooms');
@@ -88,4 +89,11 @@ router.post('/getnew', async (req, res) => {
     }
 });
 
+router.post('/setUSN',async(req,res)=>{
+    USN=req.body.USN
+    res.send({message:'USN set successfully'})
+})
+router.get('/getUSN',async(req,res)=>{
+    res.send({USN})
+})
 module.exports = router;

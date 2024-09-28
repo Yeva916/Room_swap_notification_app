@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 const port= process.env.NEXT_PUBLIC_PORT
-console.log(port)
+// console.log(port)
 
 const LoginPage = () => {
     const [USN, setUSN] = useState('');

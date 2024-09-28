@@ -10,7 +10,7 @@ const Home = (props)=>{
     const [prev, setPrev] = useState([]);
     const [new1, setNew1] = useState([]);
     const USN = props.USN;
-    console.log(USN)
+    // console.log(USN)
     const fetchData = async () => {
         try {
           const response = await axios.post(`http://localhost:${port}/getdata`, { USN });
@@ -21,6 +21,7 @@ const Home = (props)=>{
     
           const response2 = await axios.post(`http://localhost:${port}/getnew`, { USN });
           setNew1(response2.data);
+          const response3 = await axios.post("http://localhost:5000/setUSN", { USN: USN });
         } catch (error) {
           console.error("Error fetching data:", error);
         }

@@ -1,71 +1,141 @@
+//need to use redux to get the current user usn and delete the get and set usn from the list.js
 
-import { useState,useEffect } from "react"
-import axios from "axios"
+"use client";
+import { useState, useEffect } from "react";
+import axios from "axios";
+// import { socket } from "../socket";
 
-const Lists =()=>{
-    const [users,setUsers]= useState([])
-    const [distinct,setDistinct] = useState([])
-    const listdata = async()=>{
-        console.log('hi')
-        const response = await axios.get('http://localhost:5000/getList')
-        const list = response.data
+// import { Socket } from "socket.io-client";
+import { io } from "socket.io-client";
+import Header from "./header";
+const port= process.env.NEXT_PUBLIC_PORT
+const socket = io(`http://localhost:${port}`);
+// const socket = useSocket();
+const Lists = () => {
+  const [users, setUsers] = useState([]);
+  const [userUSN, setUserUSN] = useState("");
+  const [distinct, setDistinct] = useState([]);
+  // const [socket, setSocket] = useState(null);
+// const socket = useSocket();
+const USN = ''
+  const listdata = async () => {
+  
+    
+    
+    const response = await axios.get("http://localhost:5000/getList");
+    const list = response.data;
+
+    setUsers(list);
+    const distinct = await axios.get("http://localhost:5000/distinct");
+    setDistinct(distinct.data);
+
+    const response1 = await axios.get("http://localhost:5000/getUSN");
+    setUserUSN(response1.data);
+  };
+  // useEffect(()=>{
+  //   setSocket(socket)
+  // },[socket])
+
+  // Function to handle click, passing USN as an argument
+  const HandleClick = async(USN) => {
+    // console.log("hi")
+    const response = await axios.post("http://localhost:5000/senderList", { currentUser:userUSN});
+    const data = response.data;
+    // console.log(data)
+    const clickedUser=data["disRoommate"].USN //desired roommate
+    const newRoommateID=[]
+    const clickedUserNewRoommateID=[]
+    
+    // console.log(currentUser)
+    data["myNewRoomate"].forEach((name)=>{ //my new roomated
+      newRoommateID.push(name.USN)
+    })
+    data["disRoommateNewRoommate"].forEach((name)=>{ //his new roomate
+      clickedUserNewRoommateID.push(name.USN)
+    })
+    
+    // previousRoommateID.forEach(async(USN)=>{
+    //   const sendingData={"senderId":currentUser,"receiverId":USN,"message":"Roommate request pending."}
+    //   // socket.emit("send_form",sendingData)
+    //   socket.emit("send_form",sendingData)
+    //   // console.log(sendingData)
+    // })
+    if (socket.connected) {
+      //emit to derised roommate
+      socket.emit("send_form", { senderId: userUSN, receiverId: clickedUser, message: "Roommate request pending." });
+      newRoommateID.forEach(async (usn) => {
+        const sendingData = {
+          senderId: currentUser,
+          receiverId:usn ,
+          message: "Roommate request pending.",
+        }; 
+        socket.emit("send_form", sendingData);
+      })
+      clickedUserNewRoommateID.forEach(async (usn) => {
+        // console.log(currentUser)
+        const sendingData = {
+          senderId: currentUser,
+          receiverId:usn ,
+          message: "Roommate request pending.",
+        };
         
-        // list.forEach(element => {
-        //     setUsers(element)
-        // });
-        setUsers(list)
-        const distinct = await axios.get('http://localhost:5000/distinct')
-        setDistinct(distinct.data)
-        // console.log(users)
-
+        // Emit the event only when the socket is connected
+        socket.emit("send_form", sendingData);
+        // console.log("Sending data via socket:", sendingData);
+      });
+    } else {
+      console.error("Socket is not connected");
     }
-    useEffect(()=>{
-        listdata()
-    },[])
-    return(
-        <div className=" m-3">
-            <h1 className=" font-extrabold text-lg">Current roomates</h1>
-{/*  
-            <div className=" grid grid-cols-3">
+    //to desired roommate
+    
+    
+    // You can add more logic here to send requests or handle other actions
+  };
 
+  useEffect(() => {
+    setUserUSN(USN);
+    listdata();
+    
+  }, [USN]);
 
-            <div className=" flex justify-center items-center">
-                <div>Names</div>
-                {}
-            </div>
-
-            <div className=" flex justify-center items-center">
-            <div>Current Room No</div>
-            </div>
-       
-            <div className="flex justify-center items-center">
-            <div>Request</div>
-            </div>
-            </div> */}
-            <section>
-                <div className=" flex w-full bg-red-600 justify-between">
-                    <div>Name</div>
-                    <div>Current Room No</div>
-                    <div>Request</div>
-                </div>
-                {distinct.map((roommate,ind)=>(
-                    <>
-                    <div className=" border-pink-700 border-b-2" key={ind}>
-                        {roommate.map((names,index)=>(
-                            <div className=" flex w-full justify-between" key={index}>
-                                <div>{names["Names"]}</div>
-                                <div>{names["New Room\rNo"][" Alloted"]}</div>
-                                <div><button className=" bg-yellow-700 rounded-sm">Send</button></div>
-                                
-                            </div>
-                        ))}
-                    </div>
-                    </>
-                ))}
-                
-            </section>
+  return (
+    <>
+    <Header />
+    <div className="m-5">
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">Current Roommates</h1>
+      <section className="space-y-6">
+        <div className="flex w-full bg-blue-600 text-white font-semibold justify-between p-4 rounded-lg shadow-md">
+          <div>Name</div>
+          <div>Current Room No</div>
+          <div>Request</div>
         </div>
-    )
-}
 
-export default Lists
+        {/* Map through distinct roommates */}
+        {distinct.map((roommate, ind) => (
+          <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-md" key={ind}>
+            {roommate.map((names, index) => (
+              <div
+                className="flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-md transition duration-300"
+                key={index}
+              >
+                <div className="text-gray-700 font-medium">{names["Names"]}</div>
+                <div className="text-gray-600">{names["New Room\rNo"][" Alloted"]}</div>
+                <div>
+                  <button
+                    className="bg-yellow-500 text-white py-1 px-3 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-300 transition duration-300"
+                    onClick={() => HandleClick(names["USN"])}
+                  >
+                    Send
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ))}
+      </section>
+    </div>
+    </>
+  );
+};
+
+export default Lists;

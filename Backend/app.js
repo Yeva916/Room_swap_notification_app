@@ -15,8 +15,10 @@ const PORT = process.env.PORT;
 const server = http.createServer(app);
 const io = new Server(server,{
     cors:{
-        origin:"http://localhost:3000",//need to change while deploying
-    }
+        origin:"http://localhost:3000",
+        methods: ["GET", "POST"]//need to change while deploying
+    },
+    transports:['polling','websocket']
 })
 app.use(cors({
     origin: 'http://localhost:3000',
@@ -39,12 +41,15 @@ db.connectDB()
 
         const userOnline= new Map()
         io.on('connection',(socket)=>{
-            console.log('a user connected:',socket.id);
+            // console.log('a user connected:',socket.id);
             
             socket.on('user_loggin',(userId)=>{
-                console.log(userId)
+                // console.log('User logging in:', userId, 'with socket ID:', socket.id);
+                // console.log(userOnline)
+                // console.log(socket.id)
+                // console.log(userOnline)
                 userOnline.set(userId,socket.id)
-
+                console.log(userOnline)
                 const pendingNotification = db.getCollection('notifications').find({receiverId:userId,status:'pending'}).toArray()
                 pendingNotification.then((notification)=>{
                     notification.forEach((notification)=>{
@@ -59,27 +64,16 @@ db.connectDB()
                         })
                     })
                 })
-                // if(pendingNotification){
-                //     pendingNotification.forEach((notification)=>{
-                //         io.to(socket.id).emit('receive_form',notification)
-    
-                //         db.getCollection('notifications').upadateOne({
-                //             _id:notification._id
-                //         },{
-                //             $set:{
-                //                 status:'received'
-                //             }
-                //         })
-                //     })
-                // }
-
+ 
                 
 
             })
             socket.on('send_form',async(data)=>{
+                // console.log('hi')
                 const {senderId,receiverId,message}=data
                 const receiver_socket_id =userOnline.get(receiverId)
-
+                // console.log(userOnline)
+            //    console.log(data)
                 if(receiver_socket_id){
                     io.to(receiver_socket_id).emit('receive_form',{senderId,message})
                 }else{
@@ -94,9 +88,11 @@ db.connectDB()
 
             })
 
+
             socket.on('disconnect',()=>{
                 for (let [userId,socketId] of userOnline.entries()){
                     if(socketId==socket.id){
+                        console.log("userDisconnected with id:",userId)
                         userOnline.delete(userId);
                         break;
                     }
