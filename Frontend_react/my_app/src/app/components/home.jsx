@@ -35,14 +35,9 @@ const Home = (props)=>{
       
       // Fetch data whenever USN changes
       return (
-        <div className="min-h-screen bg-gray-100 p-6">
-          <header>
-            <div className="bg-gradient-to-r from-blue-500 to-purple-500 flex justify-between p-4 rounded-lg shadow-lg">
-              <div className="text-white text-lg font-bold">User Profile</div>
-              <div className="text-white">Notification</div>
-            </div>
-          </header>
-    
+        // <div className="min-h-screen bg-gray-100 p-6">
+
+        <>
           {/* Current User Section */}
           <section className="bg-white shadow-md rounded-lg p-6 my-4 flex flex-col items-center">
             <div className="h-24 w-24 rounded-full bg-blue-600 mx-auto mb-4 flex items-center justify-center shadow-lg">
@@ -94,7 +89,8 @@ const Home = (props)=>{
               </div>
             </div>
           </section>
-        </div>
+          </>
+       
       );
 
 }
