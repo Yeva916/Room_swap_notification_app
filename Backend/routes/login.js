@@ -7,7 +7,7 @@ router.post('/login', async (req, res) => {
 
     try {
         const user = await rooms.findOne({ USN });
-        console.log(user);
+        // console.log(user);
 
         if (!user) {
             return res.status(401).json({ message: 'Invalid USN' });

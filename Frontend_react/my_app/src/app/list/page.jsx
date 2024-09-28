@@ -8,7 +8,7 @@ const { useState, useEffect } = require("react")
 const List= ()=>{
     const [users,setUsers]= useState([])
     const listdata = async()=>{
-        console.log('hi')
+        // console.log('hi')
         const response = await axios.get('http://localhost:5000/getList')
         const list = response.data
         
