@@ -2,6 +2,8 @@
 
 import axios from "axios"
 import Lists from "../components/lists";
+import { Provider } from "react-redux";
+import { store } from "../store";
 
 const { useState, useEffect } = require("react")
 
@@ -22,8 +24,9 @@ const List= ()=>{
         listdata()
     },[])
     return (  
+        <Provider store={store}>
         <Lists/>
-
+        </Provider>
     //   <div className="">
     //     <ul className=" ">
     //     {users.map((names,index)=>(

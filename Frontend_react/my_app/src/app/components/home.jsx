@@ -1,6 +1,8 @@
 'use client';
 import { useState,useEffect } from "react";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setUSN } from "../slice/usn";
 
 
 const port= process.env.NEXT_PUBLIC_PORT
@@ -10,6 +12,7 @@ const Home = (props)=>{
     const [prev, setPrev] = useState([]);
     const [new1, setNew1] = useState([]);
     const USN = props.USN;
+    const dispatch = useDispatch()
     // console.log(USN)
     const fetchData = async () => {
         try {
@@ -31,6 +34,7 @@ const Home = (props)=>{
       useEffect(() => {
         if (USN) {
           fetchData();
+          dispatch(setUSN(USN))
         }
       }, [USN]);
       

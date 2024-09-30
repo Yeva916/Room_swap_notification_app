@@ -43,6 +43,7 @@ db.connectDB()
         io.on('connection',(socket)=>{
             // console.log('a user connected:',socket.id);
             
+            
             socket.on('user_loggin',(userId)=>{
                 // console.log('User logging in:', userId, 'with socket ID:', socket.id);
                 // console.log(userOnline)
@@ -55,7 +56,7 @@ db.connectDB()
                     notification.forEach((notification)=>{
                         io.to(socket.id).emit('receive_form',notification)
 
-                        db.getCollection('notifications').upadateOne({
+                        db.getCollection('notifications').updateOne({
                             _id:notification._id
                         },{
                             $set:{

@@ -1,10 +1,11 @@
 "use client";
 import { useEffect, useState } from 'react';
+// import { useSocket } from '../lib/socketContext';
 // import { socket } from '../socket';
 import { io } from 'socket.io-client';
 const port= process.env.NEXT_PUBLIC_PORT
 const socket = io(`http://localhost:${port}`);
-// const socket= useSocket()
+
 const Notification = () => {
     // const socket= useSocket()
   const [showNotifications, setShowNotifications] = useState(false);

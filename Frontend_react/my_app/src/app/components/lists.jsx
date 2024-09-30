@@ -8,16 +8,22 @@ import axios from "axios";
 // import { Socket } from "socket.io-client";
 import { io } from "socket.io-client";
 import Header from "./header";
+import { useSelector } from "react-redux";
+// import { useSocket } from "../lib/socketContext";
 const port= process.env.NEXT_PUBLIC_PORT
 const socket = io(`http://localhost:${port}`);
 // const socket = useSocket();
 const Lists = () => {
+  // const socket= useSocket()
   const [users, setUsers] = useState([]);
   const [userUSN, setUserUSN] = useState("");
   const [distinct, setDistinct] = useState([]);
   // const [socket, setSocket] = useState(null);
 // const socket = useSocket();
-const USN = ''
+// const USN = ''
+// const USN = useSelector((state)=>state.usn.activeUSN)
+
+// console.log("USN:",USN)
   const listdata = async () => {
   
     
@@ -39,7 +45,7 @@ const USN = ''
   // Function to handle click, passing USN as an argument
   const HandleClick = async(USN) => {
     // console.log("hi")
-    const response = await axios.post("http://localhost:5000/senderList", { currentUser:userUSN});
+    const response = await axios.post("http://localhost:5000/senderList", { currentUSN:userUSN,USN:USN });
     const data = response.data;
     // console.log(data)
     const clickedUser=data["disRoommate"].USN //desired roommate
@@ -65,7 +71,7 @@ const USN = ''
       socket.emit("send_form", { senderId: userUSN, receiverId: clickedUser, message: "Roommate request pending." });
       newRoommateID.forEach(async (usn) => {
         const sendingData = {
-          senderId: currentUser,
+          senderId: userUSN,
           receiverId:usn ,
           message: "Roommate request pending.",
         }; 
@@ -74,7 +80,7 @@ const USN = ''
       clickedUserNewRoommateID.forEach(async (usn) => {
         // console.log(currentUser)
         const sendingData = {
-          senderId: currentUser,
+          senderId: userUSN,
           receiverId:usn ,
           message: "Roommate request pending.",
         };
@@ -91,12 +97,20 @@ const USN = ''
     
     // You can add more logic here to send requests or handle other actions
   };
-
+  useEffect(()=>{
+    console.log("localStorageUsn:",localStorage.getItem("USN"))
+    const usn = localStorage.getItem("USN");
+    console.log(usn)
+    setUserUSN(usn)
+    console.log('userusn:',userUSN)
+  })
   useEffect(() => {
-    setUserUSN(USN);
+    // const USN = 
+    // setUserUSN(localStorage.getItem("USN"));
+    // console.log("localStorageUsn:",localStorage.getItem("USN"))
     listdata();
     
-  }, [USN]);
+  }, []);
 
   return (
     <>

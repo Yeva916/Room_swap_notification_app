@@ -48,12 +48,12 @@ router.get('/test',async(req,res)=>{
 })
 
 router.post('/senderList',async(req,res)=>{
-    console.log(req.body)
+    // console.log(req.body)
     const clickedUSN = req.body.USN
-    const currentUSN = req.body.currentUSN
+    const currentUSN = req.body.currentUSN.toUpperCase();
+    // currentUSN = currentUSN.toUppercase()
+    console.log(clickedUSN,currentUSN)
     const rooms = getCollection('rooms');
-    // const users = await rooms.find().toArray()
-
     const currentUser = await rooms.findOne({USN:currentUSN})
     console.log(currentUser)
     const clickedUser = await rooms.findOne({USN:clickedUSN})
@@ -66,32 +66,38 @@ router.post('/senderList',async(req,res)=>{
         }
     }).toArray();
     const clickedUserCurrentRoommate = await rooms.find({
-        "New Room\rNo": {
-            " Alloted": clickedUser["New Room\rNo"][" Alloted"]
-        },
-        "USN": {
-            $ne: clickedUSN
-        }
-    }).toArray();
+                "New Room\rNo": {
+                    " Alloted": clickedUser["New Room\rNo"][" Alloted"]
+                },
+                "USN": {
+                    $ne: clickedUSN
+                }
+            }).toArray();
+        
+    // res.send([clickedUser,currentUserCurrentRoommate,clickedUserCurrentRoommate])
 
-    // const current=await rooms.findOne({USN:USN})
-    // const prevRoommate = await rooms.find({
-    //     "Present\rRoom No": {
-    //         "": current["Present\rRoom No"][""]
-    //     },
-    //     "USN": {
-    //         $ne: current.USN
-    //     }
+    // const users = await rooms.find().toArray()
+    // console.log(users)
+//     const currentUser = await rooms.findOne({USN:currentUSN})
+//     console.log(currentUSN)
+//     const clickedUser = await rooms.findOne({USN:clickedUSN})
+//     const currentUserCurrentRoommate = await users.find({
+//         "New Room\rNo": {
+//             " Alloted": currentUser["New Room\rNo"][" Alloted"]
+//         },
+//         "USN": {
+//             $ne: currentUSN
+//         }
+//     }).toArray();
+//     const clickedUserCurrentRoommate = await users.find({
+//         "New Room\rNo": {
+//             " Alloted": clickedUser["New Room\rNo"][" Alloted"]
+//         },
+//         "USN": {
+//             $ne: clickedUSN
+//         }
+//     }).toArray();
 
-    // }).toArray();
-    // const newRoommate = await rooms.find({
-    //     "New Room\rNo": {
-    //         " Alloted": current["New Room\rNo"][" Alloted"]
-    //     },
-    //     "USN": {
-    //         $ne: current.USN
-    //     }
-    // }).toArray();
   const data = {
     "disRoommate":clickedUser,
     "myNewRoomate":currentUserCurrentRoommate,
